@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trình Tạo Chữ Ký Email</title>
+    <!-- Sử dụng Tailwind CSS qua CDN để định dạng giao diện nhanh chóng -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Khai báo style riêng nếu cần -->
+    <style>
+        /* Tùy chỉnh thêm CSS nếu Tailwind không đủ */
+        .signature-preview {
+            font-family: Arial, sans-serif; /* Phông chữ tiêu chuẩn cho email */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto bg-white p-6 md:p-8 rounded-lg shadow-md">
+        <h1 class="text-2xl font-bold text-center mb-8 text-gray-800">Trình Tạo Chữ Ký Email Của Bạn</h1>
+
+        <!-- Thay đổi grid: chia làm 3 cột, form chiếm 1, preview chiếm 2 -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            
+            <!-- Cột Biểu Mẫu (Form) - Giờ chỉ chiếm 1 phần (md:col-span-1) -->
+            <div class="md:col-span-1">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">Thông Tin Của Bạn</h2>
+                <form id="signature-form" class="space-y-4">
+                    
+                    <!-- Nhóm Nhập Liệu: Tên -->
+                    <div>
+                        <label for="fullName" class="block text-sm font-medium text-gray-700">Họ và Tên</label>
+                        <input type="text" id="fullName" value="Nguyễn Văn A" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" oninput="updateSignature()">
+                    </div>
+
+                    <!-- Nhóm Nhập Liệu: Chức vụ -->
+                    <div>
+                        <label for="jobTitle" class="block text-sm font-medium text-gray-700">Chức danh</label>
+                        <input type="text" id="jobTitle" value="Giám đốc" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" oninput="updateSignature()">
+                    </div>
+
+                    <!-- Nhóm Nhập Liệu: Điện thoại -->
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700">Số Điện thoại</label>
+                        <input type="tel" id="phone" value="0987.654.321" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" oninput="updateSignature()">
+                    </div>
+
+                    <!-- Nhóm Nhập Liệu: Email -->
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700">Email cá nhân</label>
+                        <input type="email" id="email" value="nguyenvana@tmt-vietnam.com" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" oninput="updateSignature()">
+                    </div>
+                </form>
+            </div>
+
+            <!-- Cột Xem Trước (Preview) - Giờ chiếm 2 phần (md:col-span-2) -->
+            <div class="md:col-span-2">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">Bản Xem Trước Chữ Ký</h2>
+                <div class="border-2 border-dashed border-gray-300 p-6 rounded-md h-full flex flex-col justify-between">
+                    
+                    <!-- Khung chứa nội dung chữ ký (sử dụng bảng (table) để đảm bảo tương thích tốt nhất với các trình duyệt email) -->
+                    <div id="signature-preview-container" class="signature-preview overflow-auto bg-white p-2 shadow-sm flex justify-center">
+                        <table cellpadding="0" cellspacing="0" border="0" style="font-family: Arial, sans-serif; width: 100%; max-width: 1000px; color: #1f2f6b;">
+                          <tr>
+                            <!-- Đã xóa thuộc tính border: 1px solid #dcdcdc; ở đây để bỏ viền -->
+                            <td style="padding: 10px;">
+                              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                <tr>
+                                  <td>
+                                    <div id="preview-fullName" style="font-size: 24px; font-weight: bold; color: #1f2f6b; text-transform: uppercase;">
+                                      NGUYỄN VĂN A
+                                    </div>
+                                    <div id="preview-jobTitle" style="font-size: 14px; color: #444444; margin-top: 5px; text-transform: uppercase;">
+                                      GIÁM ĐỐC
+                                    </div>
+                                  </td>
+
+                                  <td align="right" style="font-size: 14px; color: #222222; line-height: 24px;">
+                                    ☎ <span id="preview-phone">0987.654.321</span><br>
+                                    ✉ <a id="preview-email-link" href="mailto:nguyenvana@tmt-vietnam.com" style="color: #222222; text-decoration: none;"><span id="preview-email">nguyenvana@tmt-vietnam.com</span></a>
+                                  </td>
+                                </tr>
+                              </table>
+
+                              <hr style="margin: 20px 0; border: 0; border-top: 1px solid #e5e5e5;">
+
+                              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                <tr>
+                                  <td width="110" valign="top">
+                                    <!-- Thay thế cụm text TMT Group bằng thẻ img (hình ảnh) -->
+                                    <img src="https://tmt-vietnam.com/wp-content/uploads/2026/05/tmtmoto_logo-tmt-group-01-1.png" alt="TMT Group Logo" width="130" style="display: block; max-width: 130px; height: auto;">
+                                  </td>
+
+                                  <td valign="top" style="font-size: 13px; color: #333333; line-height: 22px; padding-left: 10px;">
+                                    <strong>Address</strong><br>
+                                    Tòa nhà Coninco, số 4 Tôn Thất Tùng,<br>
+                                    P. Kim Liên, TP. Hà Nội
+                                  </td>
+
+                                  <td valign="top" style="font-size: 13px; color: #333333; line-height: 22px; padding-left: 10px;">
+                                    <strong>Hotline</strong><br>
+                                    1900 5454 62
+                                  </td>
+
+                                  <td valign="top" style="font-size: 13px; color: #333333; line-height: 22px; padding-left: 10px;">
+                                    <strong>Email & Website</strong><br>
+                                    www.tmt-vietnam.com<br>
+                                    trungtamcskh@tmt-vietnam.com
+                                  </td>
+                                </tr>
+                              </table>
+                            </td>
+                          </tr>
+                        </table>
+                    </div>
+
+                    <!-- Các nút hành động -->
+                    <div class="mt-6">
+                        <button onclick="copySignatureVisual()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded transition duration-150 shadow-md">
+                            Sao chép Chữ ký (Để dán)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thông báo khi sao chép thành công -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-gray-800 text-white px-6 py-3 rounded shadow-lg transform transition-transform duration-300 translate-y-20 opacity-0">
+        Đã sao chép vào khay nhớ tạm!
+    </div>
+
+    <script>
+        // Hàm này được gọi mỗi khi người dùng gõ vào form
+        function updateSignature() {
+            // 1. Lấy dữ liệu từ các ô nhập liệu
+            const fullName = document.getElementById('fullName').value || 'HỌ VÀ TÊN';
+            const jobTitle = document.getElementById('jobTitle').value;
+            const phone = document.getElementById('phone').value || 'SỐ ĐIỆN THOẠI';
+            const email = document.getElementById('email').value || 'email@tmt-vietnam.com';
+
+            // 2. Cập nhật dữ liệu vào bản xem trước (DOM - Document Object Model)
+            // textContent là thuộc tính giúp thay đổi phần văn bản bên trong một thẻ HTML
+            document.getElementById('preview-fullName').textContent = fullName;
+            
+            // Xử lý chức danh: Nếu trống thì ẩn đi để không để lại khoảng trắng
+            const jobTitlePreview = document.getElementById('preview-jobTitle');
+            if (jobTitle.trim() === '') {
+                jobTitlePreview.style.display = 'none';
+            } else {
+                jobTitlePreview.style.display = 'block';
+                jobTitlePreview.textContent = jobTitle;
+            }
+
+            document.getElementById('preview-phone').textContent = phone;
+            
+            // Cập nhật tên email hiển thị và cả link (href) khi click vào
+            document.getElementById('preview-email').textContent = email;
+            document.getElementById('preview-email-link').href = 'mailto:' + email;
+        }
+
+        // Hàm để hiển thị thông báo
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // Hàm để sao chép HÌNH ẢNH/VĂN BẢN (trực quan) của chữ ký để dán thẳng vào Gmail/Outlook
+        function copySignatureVisual() {
+            const signatureContainer = document.getElementById('signature-preview-container');
+            
+            // Cần tạo một range và selection để copy định dạng rich text
+            const range = document.createRange();
+            range.selectNode(signatureContainer);
+            
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+
+            try {
+                // Lệnh copy cũ nhưng vẫn đáng tin cậy cho rich text
+                document.execCommand('copy');
+                selection.removeAllRanges();
+                showToast('Đã sao chép chữ ký! Bạn có thể dán (Ctrl+V) vào email.');
+            } catch (err) {
+                console.error('Không thể sao chép: ', err);
+                alert('Trình duyệt của bạn không hỗ trợ sao chép trực tiếp. Hãy bôi đen chữ ký và nhấn Ctrl+C.');
+            }
+        }
+
+        // Gọi hàm update ngay khi tải trang để khởi tạo giá trị ban đầu
+        window.onload = updateSignature;
+    </script>
+</body>
+</html>
